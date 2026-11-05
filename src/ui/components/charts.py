@@ -17,7 +17,7 @@ _LEVEL_COLOR_BY_STR: dict[str, str] = {
 
 def build_weather_timeline_figure(
     weather_df: pd.DataFrame,
-    title: str = "Previsão Horária: Precipitação, Média Móvel (3h) e Temperatura",
+    title: str = "Previsão Horária: Chuva e Temperatura",
 ) -> go.Figure:
     """Constrói figura Plotly com precipitação horária, média móvel de 3h e temperatura.
 
@@ -34,14 +34,14 @@ def build_weather_timeline_figure(
         fig.update_layout(
             title=title,
             template="plotly_white",
-            height=380,
+            height=320,
             annotations=[
                 {
                     "text": "Sem dados meteorológicos horários disponíveis.",
                     "xref": "paper",
                     "yref": "paper",
                     "showarrow": False,
-                    "font": {"size": 14, "color": "#64748B"},
+                    "font": {"size": 13, "color": "#64748B"},
                 }
             ],
         )
@@ -53,15 +53,15 @@ def build_weather_timeline_figure(
         go.Bar(
             x=x_axis,
             y=weather_df["Precipitacao_mm"],
-            name="Precipitação (mm/h)",
-            marker_color="rgba(59, 130, 246, 0.55)",
+            name="Chuva (mm/h)",
+            marker_color="rgba(37, 99, 235, 0.55)",
             customdata=weather_df["Prob_Chuva_Pct"]
             if "Prob_Chuva_Pct" in weather_df.columns
             else None,
             hovertemplate=(
-                "<b>Hora:</b> %{x}<br>"
-                "<b>Chuva:</b> %{y:.1f} mm<br>"
-                "<b>Probabilidade:</b> %{customdata:.0f}%<extra></extra>"
+                "<b>%{x}</b><br>"
+                "Chuva: %{y:.1f} mm<br>"
+                "Probabilidade: %{customdata:.0f}%<extra></extra>"
             ),
         ),
         secondary_y=False,
@@ -72,10 +72,10 @@ def build_weather_timeline_figure(
             go.Scatter(
                 x=x_axis,
                 y=weather_df["Precipitacao_Media_Movel_3h"],
-                name="Média Móvel Chuva (3h)",
-                mode="lines+markers",
-                line={"color": "#1D4ED8", "width": 2.5, "dash": "dash"},
-                hovertemplate="<b>Hora:</b> %{x}<br><b>Média Móvel (3h):</b> %{y:.2f} mm<extra></extra>",
+                name="Média 3h (mm)",
+                mode="lines",
+                line={"color": "#1D4ED8", "width": 2.2, "dash": "dash"},
+                hovertemplate="<b>%{x}</b><br>Média 3h: %{y:.2f} mm<extra></extra>",
             ),
             secondary_y=False,
         )
@@ -85,31 +85,41 @@ def build_weather_timeline_figure(
             go.Scatter(
                 x=x_axis,
                 y=weather_df["Temperatura_C"],
-                name="Temperatura (°C)",
-                mode="lines+markers",
-                line={"color": "#F97316", "width": 2.5},
-                hovertemplate="<b>Hora:</b> %{x}<br><b>Temperatura:</b> %{y:.1f} °C<extra></extra>",
+                name="Temp. (°C)",
+                mode="lines",
+                line={"color": "#F97316", "width": 2.2},
+                hovertemplate="<b>%{x}</b><br>Temperatura: %{y:.1f} °C<extra></extra>",
             ),
             secondary_y=True,
         )
 
     fig.update_layout(
-        title={"text": title, "font": {"size": 16}},
+        title={"text": title, "font": {"size": 14, "color": "#0F172A"}},
         template="plotly_white",
-        height=400,
+        height=330,
         hovermode="x unified",
         legend={
             "orientation": "h",
             "yanchor": "bottom",
             "y": 1.02,
-            "xanchor": "right",
-            "x": 1.0,
+            "xanchor": "left",
+            "x": 0.0,
+            "font": {"size": 11},
         },
-        margin={"l": 40, "r": 40, "t": 70, "b": 40},
+        margin={"l": 28, "r": 28, "t": 58, "b": 32},
     )
-    fig.update_xaxes(title_text="Horário Previsto")
-    fig.update_yaxes(title_text="Precipitação (mm)", secondary_y=False, rangemode="tozero")
-    fig.update_yaxes(title_text="Temperatura (°C)", secondary_y=True)
+    fig.update_xaxes(title_text=None, tickfont={"size": 11})
+    fig.update_yaxes(
+        title_text="mm",
+        secondary_y=False,
+        rangemode="tozero",
+        tickfont={"size": 11},
+    )
+    fig.update_yaxes(
+        title_text="°C",
+        secondary_y=True,
+        tickfont={"size": 11},
+    )
 
     return fig
 
@@ -127,9 +137,9 @@ def build_stop_risk_bar_figure(stops_df: pd.DataFrame) -> go.Figure:
 
     if stops_df.empty:
         fig.update_layout(
-            title="Score de Risco Climático por Parada da Rota",
+            title="Risco Climático por Parada",
             template="plotly_white",
-            height=360,
+            height=320,
         )
         return fig
 
@@ -162,22 +172,22 @@ def build_stop_risk_bar_figure(stops_df: pd.DataFrame) -> go.Figure:
             customdata=custom_data,
             hovertemplate=(
                 "<b>%{x}</b><br>"
-                "Score de Risco: %{y:.2f} (%{customdata[4]})<br>"
+                "Risco: %{y:.2f} (%{customdata[4]})<br>"
                 "CEP: %{customdata[0]} — %{customdata[1]}<br>"
-                "Distância Acumulada: %{customdata[2]:.2f} km<br>"
-                "Chuva Máx Prevista: %{customdata[3]:.1f} mm/h<extra></extra>"
+                "Distância acumulada: %{customdata[2]:.1f} km<br>"
+                "Chuva máx.: %{customdata[3]:.1f} mm/h<extra></extra>"
             ),
             name="Score de Risco",
         )
     )
 
     fig.update_layout(
-        title={"text": "Score de Risco Climático por Parada na Sequência Otimizada", "font": {"size": 16}},
+        title={"text": "Risco Climático por Parada", "font": {"size": 14, "color": "#0F172A"}},
         template="plotly_white",
-        height=380,
-        xaxis_title="Ordem de Visitação e Destinatário",
-        yaxis={"title": "Score de Risco (0.0 a 1.0)", "range": [0.0, 1.12]},
-        margin={"l": 40, "r": 30, "t": 60, "b": 60},
+        height=320,
+        xaxis_title=None,
+        yaxis={"title": "Risco (0 a 1)", "range": [0.0, 1.15]},
+        margin={"l": 28, "r": 20, "t": 48, "b": 40},
         showlegend=False,
     )
 
@@ -205,9 +215,9 @@ def build_complexity_comparison_figure(max_n: int = 10) -> go.Figure:
             x=n_values,
             y=factorial_ops,
             mode="lines+markers",
-            name="Força Bruta Exata: P_n = n! (O(n!))",
-            line={"color": "#EF4444", "width": 3},
-            marker={"size": 8},
+            name="Força Bruta O(n!)",
+            line={"color": "#EF4444", "width": 2.5},
+            marker={"size": 7},
             hovertemplate="<b>n = %{x} paradas</b><br>Permutações (n!): %{y:,}<extra></extra>",
         )
     )
@@ -217,30 +227,31 @@ def build_complexity_comparison_figure(max_n: int = 10) -> go.Figure:
             x=n_values,
             y=quadratic_ops,
             mode="lines+markers",
-            name="Heurística Vizinho Mais Próximo: O(n²)",
-            line={"color": "#10B981", "width": 3, "dash": "dot"},
-            marker={"size": 8},
-            hovertemplate="<b>n = %{x} paradas</b><br>Operações Heurísticas (n²): %{y:,}<extra></extra>",
+            name="Heurística O(n²)",
+            line={"color": "#10B981", "width": 2.5, "dash": "dot"},
+            marker={"size": 7},
+            hovertemplate="<b>n = %{x} paradas</b><br>Operações (n²): %{y:,}<extra></extra>",
         )
     )
 
     fig.update_layout(
         title={
-            "text": "Explosão Combinatória O(n!) vs Heurística Polinomial O(n²) (Escala Log)",
-            "font": {"size": 16},
+            "text": "Crescimento Combinatório O(n!) vs Heurística O(n²)",
+            "font": {"size": 14, "color": "#0F172A"},
         },
         template="plotly_white",
-        height=400,
-        xaxis={"title": "Número de Paradas de Entrega (n)", "dtick": 1},
-        yaxis={"title": "Operações / Sequências Avaliadas (Escala Log₁₀)", "type": "log"},
+        height=330,
+        xaxis={"title": "Paradas (n)", "dtick": 1},
+        yaxis={"title": "Operações (escala log)", "type": "log"},
         legend={
             "orientation": "h",
             "yanchor": "bottom",
             "y": 1.02,
-            "xanchor": "right",
-            "x": 1.0,
+            "xanchor": "left",
+            "x": 0.0,
+            "font": {"size": 11},
         },
-        margin={"l": 50, "r": 30, "t": 70, "b": 45},
+        margin={"l": 36, "r": 20, "t": 58, "b": 36},
     )
 
     return fig
@@ -248,7 +259,7 @@ def build_complexity_comparison_figure(max_n: int = 10) -> go.Figure:
 
 def render_weather_timeline_chart(
     weather_df: pd.DataFrame,
-    title: str = "Previsão Horária: Precipitação, Média Móvel (3h) e Temperatura",
+    title: str = "Previsão Horária: Chuva e Temperatura",
 ) -> None:
     """Renderiza o gráfico de linha do tempo meteorológica no Streamlit."""
     st.plotly_chart(build_weather_timeline_figure(weather_df, title=title), use_container_width=True)

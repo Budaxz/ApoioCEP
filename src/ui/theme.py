@@ -29,119 +29,179 @@ _RISK_BG_HEX: dict[ClimateRiskLevel, str] = {
 
 
 def apply_custom_theme() -> None:
-    """Injeta folha de estilos CSS moderna no aplicativo Streamlit."""
+    """Injeta folha de estilos CSS mobile-first e minimalista no aplicativo Streamlit."""
     css = """
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
         html, body, [class*="css"] {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .block-container {
+            padding-top: 1.5rem;
+            padding-bottom: 2rem;
+            max-width: 1120px;
         }
 
         .apoiocep-banner {
-            background: linear-gradient(135deg, #0F172A 0%, #1E293B 60%, #1E3A8A 100%);
-            border-radius: 14px;
-            padding: 1.5rem 1.75rem;
+            background: #0F172A;
+            border: 1px solid #1E293B;
+            border-radius: 10px;
+            padding: 1.15rem 1.4rem;
             color: #F8FAFC;
-            margin-bottom: 1.25rem;
-            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 1rem;
         }
 
         .apoiocep-banner h1 {
-            margin: 0 0 0.35rem 0;
-            font-size: 1.75rem;
+            margin: 0 0 0.2rem 0;
+            font-size: 1.35rem;
             font-weight: 700;
             color: #FFFFFF;
             letter-spacing: -0.02em;
         }
 
         .apoiocep-banner p {
-            margin: 0 0 0.85rem 0;
-            font-size: 0.96rem;
-            color: #CBD5E1;
-            line-height: 1.5;
-        }
-
-        .apoiocep-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        .apoiocep-tag {
-            background: rgba(255, 255, 255, 0.12);
-            color: #E2E8F0;
-            padding: 0.28rem 0.72rem;
-            border-radius: 9999px;
-            font-size: 0.78rem;
-            font-weight: 600;
-            border: 1px solid rgba(255, 255, 255, 0.16);
-            backdrop-filter: blur(4px);
+            margin: 0;
+            font-size: 0.88rem;
+            color: #94A3B8;
+            line-height: 1.45;
         }
 
         .apoiocep-card {
             background: #FFFFFF;
             border: 1px solid #E2E8F0;
-            border-radius: 12px;
-            padding: 1.15rem 1.35rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .route-step-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.85rem;
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-left-width: 4px;
+            border-radius: 10px;
+            padding: 0.9rem 1.1rem;
+            margin-bottom: 0.65rem;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+        }
+
+        .step-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 2rem;
+            height: 2rem;
+            border-radius: 8px;
+            background: #0F172A;
+            color: #FFFFFF;
+            font-size: 0.88rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .route-step-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .route-step-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .route-step-title {
+            font-size: 0.96rem;
+            font-weight: 600;
+            color: #0F172A;
+            line-height: 1.3;
+        }
+
+        .route-step-address {
+            font-size: 0.86rem;
+            color: #334155;
+            margin-bottom: 0.35rem;
+            line-height: 1.4;
+        }
+
+        .route-step-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.65rem;
+            font-size: 0.8rem;
+            color: #64748B;
+        }
+
+        .route-step-alert {
+            margin-top: 0.45rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #0F172A;
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 6px;
+            padding: 0.35rem 0.6rem;
         }
 
         .apoiocep-summary-card {
-            background: linear-gradient(90deg, #EFF6FF 0%, #F8FAFC 100%);
-            border-left: 5px solid #2563EB;
-            border-top: 1px solid #DBEAFE;
-            border-right: 1px solid #DBEAFE;
-            border-bottom: 1px solid #DBEAFE;
-            border-radius: 10px;
-            padding: 1.1rem 1.35rem;
-            margin-bottom: 1.1rem;
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-left: 4px solid #0F172A;
+            border-radius: 8px;
+            padding: 0.95rem 1.15rem;
+            margin-bottom: 1rem;
             color: #1E293B;
         }
 
         .apoiocep-summary-title {
-            font-size: 0.88rem;
+            font-size: 0.78rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #1D4ED8;
-            margin-bottom: 0.35rem;
+            letter-spacing: 0.06em;
+            color: #475569;
+            margin-bottom: 0.3rem;
         }
 
         .apoiocep-rec-card {
             background: #FFFFFF;
             border: 1px solid #E2E8F0;
-            border-left-width: 5px;
-            border-radius: 10px;
-            padding: 0.95rem 1.2rem;
-            margin-bottom: 0.75rem;
-            box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+            border-left-width: 4px;
+            border-radius: 8px;
+            padding: 0.85rem 1.05rem;
+            margin-bottom: 0.65rem;
         }
 
         .apoiocep-rec-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 0.35rem;
+            gap: 0.5rem;
+            margin-bottom: 0.3rem;
             font-weight: 600;
-            font-size: 0.96rem;
+            font-size: 0.92rem;
             color: #0F172A;
         }
 
         .apoiocep-rec-body {
-            font-size: 0.88rem;
+            font-size: 0.86rem;
             color: #475569;
-            margin-bottom: 0.45rem;
+            margin-bottom: 0.4rem;
             line-height: 1.45;
         }
 
         .apoiocep-rec-action {
-            font-size: 0.84rem;
-            color: #1E293B;
+            font-size: 0.82rem;
+            color: #0F172A;
             background: #F8FAFC;
-            padding: 0.45rem 0.7rem;
+            padding: 0.4rem 0.65rem;
             border-radius: 6px;
             border: 1px solid #E2E8F0;
         }
@@ -149,13 +209,35 @@ def apply_custom_theme() -> None:
         .risk-badge {
             display: inline-flex;
             align-items: center;
-            gap: 0.35rem;
-            padding: 0.22rem 0.65rem;
-            border-radius: 9999px;
-            font-size: 0.78rem;
+            gap: 0.3rem;
+            padding: 0.18rem 0.55rem;
+            border-radius: 6px;
+            font-size: 0.74rem;
             font-weight: 700;
             letter-spacing: 0.03em;
             text-transform: uppercase;
+        }
+
+        @media (max-width: 768px) {
+            .block-container {
+                padding-top: 1rem;
+                padding-bottom: 1.5rem;
+                padding-left: 0.85rem;
+                padding-right: 0.85rem;
+            }
+
+            .apoiocep-banner {
+                padding: 0.95rem 1.1rem;
+            }
+
+            .apoiocep-banner h1 {
+                font-size: 1.2rem;
+            }
+
+            .route-step-card {
+                padding: 0.8rem 0.9rem;
+                gap: 0.7rem;
+            }
         }
     </style>
     """

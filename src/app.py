@@ -40,7 +40,7 @@ def render_sidebar(
     cep_service: CEPService,
     weather_service: WeatherService,
 ) -> float:
-    """Renderiza a barra lateral de parâmetros matemáticos, sincronização de APIs e governança.
+    """Renderiza a barra lateral enxuta com controle de clima, atualização e resumo técnico.
 
     Args:
         cep_service: Instância de `CEPService`.
@@ -50,35 +50,34 @@ def render_sidebar(
         Valor selecionado para o coeficiente de aversão ao risco climático ($\\alpha$).
     """
     with st.sidebar:
-        st.markdown("## ⚙️ Parâmetros de Decisão")
+        st.markdown("### Ajuste da Rota")
         st.caption(
-            "Ajuste o peso da penalização meteorológica na função objetivo do grafo de entregas:"
+            "Defina o quanto o roteirizador deve antecipar ou contornar áreas com chuva forte:"
         )
-        st.latex(r"C_{a,b} = d_{a,b} \cdot (1 + \alpha \cdot R_b)")
 
         alpha = float(
             st.slider(
-                "Aversão ao Risco Climático (α)",
+                "Priorizar desvio de chuva (α)",
                 min_value=0.0,
                 max_value=2.0,
                 value=0.5,
                 step=0.1,
                 help=(
-                    "α = 0.0 considera apenas a menor distância geodésica (Haversine). "
-                    "Valores maiores priorizam antecipar ou contornar áreas com previsão de tempestade."
+                    "α = 0.0 considera apenas a menor distância (Haversine). "
+                    "Valores maiores priorizam antecipar ou contornar áreas com previsão de chuva forte."
                 ),
             )
         )
 
         st.divider()
-        st.markdown("### 🌐 Sincronização de APIs")
+        st.markdown("### Dados da Rota")
         if st.button(
-            "🔄 Sincronizar Clima Real (APIs)",
+            "Atualizar Clima Agora",
             use_container_width=True,
             type="primary",
             key="sidebar_sync_apis_btn",
         ):
-            with st.spinner("Consultando BrasilAPI/ViaCEP e Open-Meteo..."):
+            with st.spinner("Consultando CEP e previsão do tempo..."):
                 origin_curr: DeliveryStop = st.session_state["origin"]
                 stops_curr: list[DeliveryStop] = st.session_state["stops"]
                 updated_origin, updated_stops = refresh_stops_with_live_apis(
@@ -89,11 +88,11 @@ def render_sidebar(
                 )
                 st.session_state["origin"] = updated_origin
                 st.session_state["stops"] = updated_stops
-            st.success("APIs sincronizadas com sucesso!")
+            st.success("Clima e endereços atualizados.")
             st.rerun()
 
         if st.button(
-            "📦 Restaurar Roteiro Curitiba",
+            "Restaurar Roteiro Padrão",
             use_container_width=True,
             key="sidebar_restore_demo_btn",
         ):
@@ -103,14 +102,10 @@ def render_sidebar(
             st.rerun()
 
         st.divider()
-        st.markdown("### 🏛️ Governança & Arquitetura")
-        st.markdown(
-            f"- **Aplicação:** `{settings.APP_NAME} v{settings.APP_VERSION}`\n"
-            f"- **Cache SQLite TTL:** `{settings.CACHE_TTL_HOURS}h`\n"
-            f"- **Timeout HTTP:** `{settings.HTTP_TIMEOUT_SECONDS}s` (Tenacity Retry)\n"
-            "- **Provedores Postais:** BrasilAPI v2 $\\to$ ViaCEP $\\to$ Nominatim\n"
-            "- **Provedor Climático:** Open-Meteo Forecast API\n"
-            "- **Disciplina:** Matemática Computacional Aplicada (Profs. Aron e Cristiano)"
+        st.caption(
+            f"{settings.APP_NAME} v{settings.APP_VERSION} · "
+            f"Cache {settings.CACHE_TTL_HOURS}h · "
+            "BrasilAPI / ViaCEP / Open-Meteo"
         )
 
     return alpha
@@ -119,8 +114,8 @@ def render_sidebar(
 def main() -> None:
     """Executa o fluxo principal da interface gráfica Streamlit do ApoioCEP."""
     st.set_page_config(
-        page_title="ApoioCEP | Painel Logístico & Clima",
-        page_icon="📦",
+        page_title="ApoioCEP | Roteirizador de Entregas",
+        page_icon=None,
         layout="wide",
     )
 
@@ -143,9 +138,9 @@ def main() -> None:
 
     tab_dashboard, tab_planner, tab_math = st.tabs(
         [
-            "📊 Painel Operacional & Copiloto",
-            "🗺️ Planejador de Entregas & Consulta CEP",
-            "🧮 Laboratório de Matemática Aplicada (A3)",
+            "Rota do Dia",
+            "Gerenciar Entregas",
+            "Análise Matemática (A3)",
         ]
     )
 

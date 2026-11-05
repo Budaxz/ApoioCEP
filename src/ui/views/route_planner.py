@@ -279,17 +279,16 @@ def render_route_planner_view(
         cep_service: Serviço de consulta resiliente de CEP.
         weather_service: Serviço de previsão meteorológica Open-Meteo.
     """
-    st.markdown("### 🗺️ Planejador de Entregas & Consulta Geocodificada por CEP")
+    st.markdown("### Gerenciar Entregas")
     st.caption(
-        "Cadastre novos pontos de entrega informando o CEP brasileiro. O sistema consulta "
-        "automaticamente logradouro, coordenadas (BrasilAPI / ViaCEP / Nominatim) e a curva "
-        "horária de chuva e vento (Open-Meteo)."
+        "Cadastre novos pontos de entrega informando o CEP. O sistema localiza automaticamente "
+        "o endereço e a previsão de chuva para recalcular a melhor sequência de rota."
     )
 
     action_col1, action_col2 = st.columns(2)
     with action_col1:
         if st.button(
-            "🔄 Atualizar Clima Real via APIs (BrasilAPI + Open-Meteo)",
+            "Atualizar Clima Real",
             use_container_width=True,
             type="primary",
             key="btn_planner_refresh_apis",
@@ -305,19 +304,19 @@ def render_route_planner_view(
                 )
                 st.session_state["origin"] = new_origin
                 st.session_state["stops"] = new_stops
-            st.success("Dados postais e meteorológicos sincronizados com sucesso!")
+            st.success("Endereços e previsão do tempo atualizados.")
             st.rerun()
 
     with action_col2:
         if st.button(
-            "📦 Restaurar Roteiro de Demonstração (Curitiba)",
+            "Restaurar Roteiro Padrão",
             use_container_width=True,
             key="btn_planner_restore_demo",
         ):
             default_origin, default_stops = load_default_curitiba_stops()
             st.session_state["origin"] = default_origin
             st.session_state["stops"] = default_stops
-            st.info("Roteiro padrão de Curitiba restaurado com sucesso.")
+            st.info("Roteiro padrão de Curitiba restaurado.")
             st.rerun()
 
     st.divider()
@@ -325,21 +324,21 @@ def render_route_planner_view(
     form_col, list_col = st.columns([2, 3], gap="large")
 
     with form_col:
-        st.markdown("#### ➕ Cadastrar Nova Parada")
+        st.markdown("#### Nova Entrega")
         with st.form("add_delivery_stop_form", clear_on_submit=True):
             recipient_name = st.text_input(
-                "Nome do Destinatário / Cliente",
+                "Destinatário / Cliente",
                 placeholder="Ex.: Farmácia Água Verde",
             )
             cep_input = st.text_input(
-                "CEP de Destino (8 dígitos)",
+                "CEP (8 dígitos)",
                 placeholder="Ex.: 80240-000",
                 max_chars=9,
             )
             weight_col, prio_col = st.columns(2)
             with weight_col:
                 package_weight = st.number_input(
-                    "Peso da Encomenda (kg)",
+                    "Peso (kg)",
                     min_value=0.1,
                     max_value=500.0,
                     value=2.0,
@@ -347,19 +346,19 @@ def render_route_planner_view(
                 )
             with prio_col:
                 priority_str = st.selectbox(
-                    "Prioridade Logística",
+                    "Prioridade",
                     options=[p.value for p in DeliveryPriority],
                     index=1,
                 )
 
             delivery_window = st.selectbox(
-                "Janela de Entrega Programada",
+                "Janela de Entrega",
                 options=DELIVERY_WINDOW_OPTIONS,
                 index=1,
             )
 
             submitted = st.form_submit_button(
-                "➕ Consultar CEP, Clima e Adicionar Parada",
+                "Adicionar Entrega",
                 use_container_width=True,
                 type="primary",
             )
@@ -400,7 +399,7 @@ def render_route_planner_view(
 
                         st.success(
                             f"Parada '{clean_name}' ({address.logradouro} - {address.bairro}) "
-                            "adicionada com sucesso!"
+                            "adicionada."
                         )
                         st.rerun()
                     except (CEPLookupError, ValueError) as exc:
@@ -410,21 +409,21 @@ def render_route_planner_view(
         origin_stop: DeliveryStop = st.session_state["origin"]
         stops_list: list[DeliveryStop] = st.session_state["stops"]
 
-        st.markdown(f"#### 📋 Paradas Cadastradas no Roteiro ({len(stops_list)})")
+        st.markdown(f"#### Entregas Cadastradas ({len(stops_list)})")
         st.markdown(
-            f"**🏢 Ponto de Partida (Origem):** `{origin_stop.address.cep}` — "
+            f"**Ponto de Partida (Origem):** `{origin_stop.address.cep}` — "
             f"{origin_stop.address.logradouro} ({origin_stop.address.bairro}, "
             f"{origin_stop.address.cidade}/{origin_stop.address.uf})"
         )
 
         if not stops_list:
             st.warning(
-                "Nenhuma parada cadastrada no momento. Utilize o formulário ao lado ou "
-                "restaure o roteiro de demonstração de Curitiba."
+                "Nenhuma entrega cadastrada. Utilize o formulário ao lado ou "
+                "restaure o roteiro padrão."
             )
         else:
             for idx, stop in enumerate(stops_list):
-                badge_html = format_risk_badge_html(stop.risk_level, stop.risk_score)
+                badge_html = format_risk_badge_html(stop.risk_level)
                 max_rain = (
                     stop.weather_forecast.max_precipitation_mm()
                     if stop.weather_forecast is not None
@@ -437,26 +436,27 @@ def render_route_planner_view(
                 )
 
                 with st.container(border=True):
-                    header_col, btn_col = st.columns([5, 1])
+                    header_col, btn_col = st.columns([4, 1])
                     with header_col:
                         st.markdown(
                             f"**{stop.id} — {stop.recipient_name}** &nbsp; {badge_html}",
                             unsafe_allow_html=True,
                         )
                         st.caption(
-                            f"📍 **CEP:** {stop.address.cep} | {stop.address.logradouro} — "
-                            f"**{stop.address.bairro}** ({stop.address.cidade}/{stop.address.uf})  \n"
-                            f"⏰ **Janela:** `{stop.delivery_window}` | "
-                            f"⚖️ **Peso:** `{stop.package_weight_kg:.1f} kg` | "
-                            f"🏷️ **Prioridade:** `{stop.priority.value}` | "
-                            f"🌧️ **Chuva máx:** `{max_rain:.1f} mm` | "
-                            f"💨 **Vento máx:** `{max_wind:.1f} km/h`"
+                            f"{stop.address.logradouro} · {stop.address.bairro} "
+                            f"(CEP {stop.address.cep})  \n"
+                            f"Janela: {stop.delivery_window} | "
+                            f"Peso: {stop.package_weight_kg:.1f} kg | "
+                            f"Prioridade: {stop.priority.value} | "
+                            f"Chuva máx: {max_rain:.1f} mm | "
+                            f"Vento: {max_wind:.0f} km/h"
                         )
                     with btn_col:
                         if st.button(
-                            "🗑️",
+                            "Remover",
                             key=f"remove_stop_{stop.id}_{idx}",
                             help=f"Remover parada {stop.recipient_name}",
+                            use_container_width=True,
                         ):
                             remaining = [
                                 s for i, s in enumerate(stops_list) if i != idx

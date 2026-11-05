@@ -12,7 +12,7 @@ from src.ui.theme import RISK_COLORS_RGB
 
 _DEFAULT_CURITIBA_LAT = -25.4284
 _DEFAULT_CURITIBA_LON = -49.2733
-_ORIGIN_COLOR_RGB: list[int] = [59, 130, 246, 240]
+_ORIGIN_COLOR_RGB: list[int] = [15, 23, 42, 240]
 
 
 def build_route_pydeck_deck(route_plan: RoutePlan) -> pdk.Deck:
@@ -33,7 +33,7 @@ def build_route_pydeck_deck(route_plan: RoutePlan) -> pdk.Deck:
         path_coords.append([lon, lat])
         points_data.append(
             {
-                "ordem_label": "0 (Origem / CD)",
+                "ordem_label": "Partida (CD)",
                 "destinatario": route_plan.origin.recipient_name,
                 "bairro": route_plan.origin.address.bairro,
                 "cep": route_plan.origin.address.cep,
@@ -54,7 +54,7 @@ def build_route_pydeck_deck(route_plan: RoutePlan) -> pdk.Deck:
         path_coords.append([lon, lat])
         points_data.append(
             {
-                "ordem_label": f"{idx}ª Parada",
+                "ordem_label": f"Parada {idx}",
                 "destinatario": stop.recipient_name,
                 "bairro": stop.address.bairro,
                 "cep": stop.address.cep,
@@ -83,9 +83,9 @@ def build_route_pydeck_deck(route_plan: RoutePlan) -> pdk.Deck:
                 "path": path_coords,
                 "ordem_label": "Trajeto Otimizado",
                 "destinatario": f"{len(route_plan.ordered_stops)} paradas",
-                "bairro": f"{route_plan.total_distance_km:.2f} km totais",
+                "bairro": f"{route_plan.total_distance_km:.1f} km totais",
                 "cep": route_plan.algorithm_used,
-                "risco": f"Score médio {route_plan.average_risk_score:.2f}",
+                "risco": f"Risco médio {route_plan.average_risk_score:.2f}",
             }
         ]
         layers.append(
@@ -93,7 +93,7 @@ def build_route_pydeck_deck(route_plan: RoutePlan) -> pdk.Deck:
                 "PathLayer",
                 data=path_data,
                 get_path="path",
-                get_color=[37, 99, 235, 200],
+                get_color=[37, 99, 235, 210],
                 width_scale=12,
                 width_min_pixels=4,
                 pickable=True,
@@ -107,11 +107,11 @@ def build_route_pydeck_deck(route_plan: RoutePlan) -> pdk.Deck:
                 data=points_data,
                 get_position="[lon, lat]",
                 get_fill_color="color",
-                get_line_color=[15, 23, 42, 255],
+                get_line_color=[255, 255, 255, 255],
                 line_width_min_pixels=2,
                 get_radius="radius",
                 radius_min_pixels=8,
-                radius_max_pixels=22,
+                radius_max_pixels=20,
                 stroked=True,
                 filled=True,
                 pickable=True,
@@ -122,22 +122,22 @@ def build_route_pydeck_deck(route_plan: RoutePlan) -> pdk.Deck:
         latitude=mean_lat,
         longitude=mean_lon,
         zoom=11.8,
-        pitch=25,
+        pitch=0,
         bearing=0,
     )
 
     tooltip: dict[str, Any] = {
         "html": (
             "<b>{ordem_label}</b> — {destinatario}<br/>"
-            "<b>Bairro:</b> {bairro} ({cep})<br/>"
-            "<b>Risco Climático:</b> {risco}"
+            "{bairro} (CEP {cep})<br/>"
+            "Clima: {risco}"
         ),
         "style": {
             "backgroundColor": "#0F172A",
             "color": "#F8FAFC",
             "fontSize": "12px",
-            "borderRadius": "8px",
-            "padding": "8px 10px",
+            "borderRadius": "6px",
+            "padding": "6px 10px",
         },
     }
 
@@ -152,4 +152,4 @@ def build_route_pydeck_deck(route_plan: RoutePlan) -> pdk.Deck:
 def render_route_map(route_plan: RoutePlan) -> None:
     """Renderiza o mapa PyDeck da rota otimizada no aplicativo Streamlit."""
     deck = build_route_pydeck_deck(route_plan)
-    st.pydeck_chart(deck, use_container_width=True)
+    st.pydeck_chart(deck, use_container_width=True, height=340)

@@ -39,7 +39,7 @@ def render_math_lab_view(
         stops: Lista de paradas de entrega cadastradas.
         alpha: Coeficiente de aversão ao risco climático ($\\alpha$).
     """
-    st.markdown("### 🧮 Laboratório de Matemática Computacional Aplicada (Amostra A3)")
+    st.markdown("### Análise Matemática Aplicada (Amostra A3)")
     st.caption(
         "Demonstração formal e experimental dos modelos matemáticos implementados no motor do "
         "ApoioCEP — Disciplina dos Professores Aron e Cristiano (UniCuritiba)."
@@ -142,15 +142,15 @@ def render_math_lab_view(
 
         seq_col1, seq_col2 = st.columns(2)
         with seq_col1:
-            exact_seq_str = " ➔ ".join(
+            exact_seq_str = " -> ".join(
                 ["Origem", *[f"{s.id} ({s.address.bairro})" for s in exact_plan.ordered_stops]]
             )
-            st.markdown(f"**🎯 Sequência Ótima Global ($O(n!)$):**  \n`{exact_seq_str}`")
+            st.markdown(f"**Sequência Ótima Global ($O(n!)$):**  \n`{exact_seq_str}`")
         with seq_col2:
-            heur_seq_str = " ➔ ".join(
+            heur_seq_str = " -> ".join(
                 ["Origem", *[f"{s.id} ({s.address.bairro})" for s in heuristic_plan.ordered_stops]]
             )
-            st.markdown(f"**⚡ Sequência Heurística (*NN + 2-Opt*):**  \n`{heur_seq_str}`")
+            st.markdown(f"**Sequência Heurística (*NN + 2-Opt*):**  \n`{heur_seq_str}`")
     else:
         st.warning(
             f"O roteiro atual possui **{n_current} paradas** "
