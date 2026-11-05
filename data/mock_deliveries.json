@@ -1,0 +1,62 @@
+[
+  {
+    "id": "DEL-001",
+    "recipient_name": "Livraria do Centro",
+    "cep": "80020-010",
+    "logradouro": "Praça Tiradentes",
+    "bairro": "Centro",
+    "cidade": "Curitiba",
+    "uf": "PR",
+    "package_weight_kg": 2.5,
+    "priority": "ALTA",
+    "delivery_window": "09:00 - 12:00"
+  },
+  {
+    "id": "DEL-002",
+    "recipient_name": "Hospital de Olhos",
+    "cep": "80060-000",
+    "logradouro": "Rua XV de Novembro",
+    "bairro": "Centro",
+    "cidade": "Curitiba",
+    "uf": "PR",
+    "package_weight_kg": 1.2,
+    "priority": "ALTA",
+    "delivery_window": "10:00 - 13:00"
+  },
+  {
+    "id": "DEL-003",
+    "recipient_name": "Oficina Mecânica Batel",
+    "cep": "80420-000",
+    "logradouro": "Avenida do Batel",
+    "bairro": "Batel",
+    "cidade": "Curitiba",
+    "uf": "PR",
+    "package_weight_kg": 7.8,
+    "priority": "MEDIA",
+    "delivery_window": "13:00 - 16:00"
+  },
+  {
+    "id": "DEL-004",
+    "recipient_name": "Condomínio Jardim Botânico",
+    "cep": "80210-170",
+    "logradouro": "Rua Engenheiro Ostoja Roguski",
+    "bairro": "Jardim Botânico",
+    "cidade": "Curitiba",
+    "uf": "PR",
+    "package_weight_kg": 3.0,
+    "priority": "BAIXA",
+    "delivery_window": "14:00 - 17:00"
+  },
+  {
+    "id": "DEL-005",
+    "recipient_name": "Centro Comercial Portão",
+    "cep": "80610-010",
+    "logradouro": "Avenida República Argentina",
+    "bairro": "Portão",
+    "cidade": "Curitiba",
+    "uf": "PR",
+    "package_weight_kg": 4.1,
+    "priority": "MEDIA",
+    "delivery_window": "15:00 - 18:00"
+  }
+]
