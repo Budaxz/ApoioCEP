@@ -23,7 +23,6 @@ from src.ui.views import (  # noqa: E402
     load_default_curitiba_stops,
     refresh_stops_with_live_apis,
     render_dashboard_view,
-    render_math_lab_view,
     render_route_planner_view,
 )
 
@@ -136,11 +135,10 @@ def main() -> None:
     copilot = DispatcherCopilot()
     report = copilot.analyze_and_optimize(origin=origin, stops=stops, alpha=alpha)
 
-    tab_dashboard, tab_planner, tab_math = st.tabs(
+    tab_dashboard, tab_planner = st.tabs(
         [
             "Rota do Dia",
             "Gerenciar Entregas",
-            "Análise Matemática (A3)",
         ]
     )
 
@@ -151,13 +149,6 @@ def main() -> None:
         render_route_planner_view(
             cep_service=cep_service,
             weather_service=weather_service,
-        )
-
-    with tab_math:
-        render_math_lab_view(
-            origin=report.route_plan.origin,
-            stops=report.route_plan.ordered_stops,
-            alpha=alpha,
         )
 
 

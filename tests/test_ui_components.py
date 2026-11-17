@@ -188,7 +188,7 @@ def test_streamlit_app_renders_without_exception() -> None:
     at = AppTest.from_file(str(app_path), default_timeout=15)
     at.run()
     assert not at.exception
-    assert len(at.tabs) == 3
-    assert len(at.metric) >= 8
+    assert len(at.tabs) == 2
+    assert len(at.metric) >= 4
 
 
