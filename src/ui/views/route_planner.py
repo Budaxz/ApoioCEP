@@ -214,16 +214,20 @@ def _refresh_single_stop(
     weather_service: WeatherService,
 ) -> DeliveryStop:
     """Atualiza endereço e previsão climática de uma parada preservando dados em caso de falha."""
+    existing_coords = stop.address.coordinates
     updated_address = stop.address
     try:
         fetched_addr = cep_service.fetch_address(stop.address.cep)
-        updated_address = fetched_addr
+        if existing_coords is not None:
+            updated_address = fetched_addr.model_copy(update={"coordinates": existing_coords})
+        else:
+            updated_address = fetched_addr
     except Exception as exc:
         logger.warning(
             f"Mantendo endereço anterior para parada {stop.id} (CEP {stop.address.cep}): {exc}"
         )
 
-    coords = updated_address.coordinates or stop.address.coordinates or DEFAULT_CURITIBA_COORDS
+    coords = existing_coords or updated_address.coordinates or DEFAULT_CURITIBA_COORDS
     if updated_address.coordinates is None:
         updated_address = updated_address.model_copy(update={"coordinates": coords})
 

@@ -71,7 +71,7 @@ Todos os módulos matemáticos foram implementados com funções puras, tipagem 
 ## 📊 5. Resultados Obtidos e Validação Experimental (Coluna Direita — Superior)
 
 ### 5.1 Comparativo Assintótico: Força Bruta $O(n!)$ vs Heurística Polinomial $O(n^2)$
-Experimentos conduzidos no módulo **Laboratório de Matemática Aplicada** demonstram por que a abordagem heurística é indispensável em produção:
+Experimentos conduzidos com os módulos `src/mathematics/permutations.py` e `src/mathematics/routing.py` demonstram por que a abordagem heurística é indispensável em produção:
 
 | Nº de Paradas ($n$) | Espaço Fatorial ($P_n = n!$) | Operações Heurísticas ($n^2$) | Tempo Força Bruta Estimado | Tempo *Nearest Neighbor + 2-Opt* |
 | :---: | :---: | :---: | :---: | :---: |

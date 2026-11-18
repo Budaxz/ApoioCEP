@@ -152,4 +152,4 @@ def build_route_pydeck_deck(route_plan: RoutePlan) -> pdk.Deck:
 def render_route_map(route_plan: RoutePlan) -> None:
     """Renderiza o mapa PyDeck da rota otimizada no aplicativo Streamlit."""
     deck = build_route_pydeck_deck(route_plan)
-    st.pydeck_chart(deck, use_container_width=True, height=340)
+    st.pydeck_chart(deck, width="stretch", height=340, key="route_map_pydeck")
