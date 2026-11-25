@@ -150,3 +150,7 @@ mypy src/
 ## 👥 Equipe do Projeto
 * Projeto desenvolvido para a Amostra da A3 — UniCuritiba.
 * Disciplina: **Matemática Computacional Aplicada**.
+* Cristian A. Tavares
+* Pedro H. P. Moreira
+* Pedro V. Budasz
+
